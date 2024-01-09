@@ -34,7 +34,7 @@ into this:
 </html>
 ```
 
-...all dynamically at request time. It is effectively serverside rendering where your output file is being rendered from Lua functions. It supports a component-like system for reusing blocks of HTML. It runs on six operating systems with a single file thanks to the [redbean](https://redbean.dev/) web server.
+...all dynamically at request time. It is effectively serverside rendering where your output file is being rendered from Lua functions. It is written in 100% vanilla Lua and can be integrated into any Lua environment. It supports a component-like system for reusing blocks of HTML. It runs on six operating systems with a single file thanks to the [redbean](https://redbean.dev/) web server.
 
 It is suggested to read `src/pages/index.html.lua`, as it is heavily commented.
 
@@ -131,3 +131,10 @@ Paths get tried in this order:
 - `pages/:path/index.html.lua`
 - `pages/:path.html.lua`
 - `pages/:path.lua`
+
+## Testimonials
+
+- "this is based i like this" - <https://c7.pm/>
+- "Stop programming" - <https://coolmathgames.tech/>
+- ":(" - <https://camora.dev/>
+- "omg Roblox" - <https://jabco.page/>
