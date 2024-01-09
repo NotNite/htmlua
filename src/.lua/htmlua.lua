@@ -31,7 +31,7 @@ function htmlua.parse(args)
           table.insert(valueless_props, prop)
         end
       else
-        props[k] = v
+        props[k] = tostring(v)
       end
     end
   elseif args then
@@ -91,6 +91,10 @@ function htmlua.elem(name, config)
     str = str .. ">"
 
     for _, child in ipairs(parsed.children) do
+      if type(child) == "table" then
+        child = htmlua.elems(child)
+      end
+
       str = str .. child
     end
 
