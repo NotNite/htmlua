@@ -36,6 +36,8 @@ into this:
 
 ...all dynamically at request time. It is effectively serverside rendering where your output file is being rendered from Lua functions. It supports a component-like system for reusing blocks of HTML. It runs on six operating systems with a single file thanks to the [redbean](https://redbean.dev/) web server.
 
+It is suggested to read `src/pages/index.html.lua`, as it is heavily commented.
+
 ## Why?
 
 I recently read [Ben Visness](https://bvisness.me/luax/)'s article about their custom Lua dialect for JSX-like elements. I thought I could build a system just as flexible to use in vanilla Lua.
@@ -43,7 +45,7 @@ I recently read [Ben Visness](https://bvisness.me/luax/)'s article about their c
 ## Installation
 
 - Copy the contents of this repository into a new folder.
-- Download `redbean.com` and `zip.com` from the redbean website.
+- Download `redbean.com` from the redbean website.
 - Execute `./run.sh` to pack the web server and run it.
 
 ## How it works

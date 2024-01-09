@@ -1,13 +1,13 @@
 local htmlua = {}
 
----@alias Serializable string | number | boolean
----@alias DefaultProps table<string, Serializable>
----@alias DefaultChildren Serializable[]
----@alias PropsOrChildren<P, C> `P` | `C` | Serializable
+---@alias Displayable string | number | boolean
+---@alias DefaultProps table<string, Displayable>
+---@alias DefaultChildren Displayable[]
+---@alias PropsOrChildren<P, C> `P` | `C` | Displayable
 
 -- LuaLS generics seem kinda broken right now lol
----@alias Element<P, C> fun(args: PropsOrChildren<`P`, `C`>): string
----@alias Component<P, C> fun(props: `P`, children: `C`): string | string[]
+---@alias Element<P, C> fun(args: PropsOrChildren<`P`, `C`>?): Displayable
+---@alias Component<P, C> fun(props: `P`, children: `C`): Displayable | Displayable[]
 
 ---@class ElementConfig
 ---@field close boolean?
@@ -15,12 +15,12 @@ local htmlua = {}
 
 ---@generic P: {}
 ---@generic C: {}
----@param args PropsOrChildren<`P`, `C`>
----@return { props: `P`, children: `C`, valueless_props: string[] }
+---@param args PropsOrChildren<`P`, `C`>?
+---@return { props: `P`, children: `C`, boolean_props: string[] }
 function htmlua.parse(args)
   local props = {}
   local children = {}
-  local valueless_props = {}
+  local boolean_props = {}
 
   if type(args) == "table" then
     for k, v in pairs(args) do
@@ -28,7 +28,7 @@ function htmlua.parse(args)
         table.insert(children, v)
       elseif k == "_" then
         for _, prop in ipairs(v) do
-          table.insert(valueless_props, prop)
+          table.insert(boolean_props, prop)
         end
       else
         props[k] = tostring(v)
@@ -41,7 +41,7 @@ function htmlua.parse(args)
   return {
     props = props,
     children = children,
-    valueless_props = valueless_props,
+    boolean_props = boolean_props,
   }
 end
 
@@ -69,17 +69,20 @@ end
 ---@return Element<`P`, `C`>
 function htmlua.elem(name, config)
   local cfg = assign_config(config)
-  ---@param args PropsOrChildren<`P`, `C`>
+  ---@param args PropsOrChildren<`P`, `C`>?
   return function(args)
     local str = "<" .. name
     local parsed = htmlua.parse(args)
 
     for k, v in pairs(parsed.props) do
-      local entry = k .. '="' .. v .. '"'
-      str = str .. " " .. entry
+      local display = htmlua.display(v)
+      if display then
+        local entry = k .. '="' .. display .. '"'
+        str = str .. " " .. entry
+      end
     end
 
-    for _, prop in ipairs(parsed.valueless_props) do
+    for _, prop in ipairs(parsed.boolean_props) do
       str = str .. " " .. prop
     end
 
@@ -91,11 +94,10 @@ function htmlua.elem(name, config)
     str = str .. ">"
 
     for _, child in ipairs(parsed.children) do
-      if type(child) == "table" then
-        child = htmlua.elems(child)
+      local display = htmlua.display(child)
+      if display then
+        str = str .. display
       end
-
-      str = str .. child
     end
 
     if cfg.close then
@@ -106,27 +108,28 @@ function htmlua.elem(name, config)
   end
 end
 
----@param tbl (string | string[])[]
+---@param tbl (Displayable | Displayable[])[]
 ---@return string
 local function recursive_concat(tbl)
   local str = ""
+
   for _, v in ipairs(tbl) do
-    if type(v) == "table" then
-      str = str .. recursive_concat(v)
-    else
-      str = str .. v
-    end
+    str = str .. htmlua.display(v)
   end
+
   return str
 end
 
----@param args string | string[]
----@return string
-function htmlua.elems(args)
-  if type(args) == "table" then
-    return recursive_concat(args)
-  else
-    return args
+---@return string?
+function htmlua.display(value)
+  if type(value) == "table" then
+    return recursive_concat(value)
+  elseif
+    type(value) == "string"
+    or type(value) == "number"
+    or type(value) == "boolean"
+  then
+    return tostring(value)
   end
 end
 
@@ -138,7 +141,7 @@ function htmlua.component(func)
   ---@param args PropsOrChildren<`P`, `C`>
   return function(args)
     local parsed = htmlua.parse(args)
-    return htmlua.elems(func(parsed.props, parsed.children))
+    return htmlua.display(func(parsed.props, parsed.children))
   end
 end
 
