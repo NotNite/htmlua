@@ -18,6 +18,12 @@ local function do_htmlua()
   -- remove trailing slash
   path = string.gsub(path, "/$", "")
 
+  -- Reject access to /pages, as we don't want Redbean to execute it
+  if string.match(path, "^/pages") then
+    ServeError(404)
+    return
+  end
+
   local paths = {
     path .. "/index",
     path .. "/index.html",

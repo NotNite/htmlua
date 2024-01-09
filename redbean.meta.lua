@@ -24,3 +24,7 @@ function SetHeader(name, value) end
 
 ---@return string
 function GetMethod() end
+
+---@param code number
+---@param reason string?
+function ServeError(code, reason) end
