@@ -46,7 +46,11 @@ local App = htmlua.component(function(props, children)
     p { "The current time is " .. time },
 
     -- Reuse components by calling them like elements.
-    HelloWorld { name = "world", lucky_number = 7, "This is a child element!" },
+    HelloWorld {
+      name = "world",
+      lucky_number = 7,
+      span "This is a child element!",
+    },
     HelloWorld { name = "Lua", lucky_number = 42 },
 
     input {
