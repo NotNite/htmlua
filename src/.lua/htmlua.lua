@@ -45,6 +45,17 @@ function htmlua.parse(args)
   }
 end
 
+---@param str string
+---@return string
+function htmlua.escape(str)
+  local ret = str:gsub("&", "&amp;")
+  ret = ret:gsub("<", "&lt;")
+  ret = ret:gsub(">", "&gt;")
+  ret = ret:gsub('"', "&quot;")
+  ret = ret:gsub("'", "&#39;")
+  return ret
+end
+
 ---@param config ElementConfig?
 ---@return ElementConfig
 local function assign_config(config)
@@ -77,6 +88,7 @@ function htmlua.elem(name, config)
     for k, v in pairs(parsed.props) do
       local display = htmlua.display(v)
       if display then
+        display = htmlua.escape(display)
         local entry = k .. '="' .. display .. '"'
         str = str .. " " .. entry
       end

@@ -65,6 +65,9 @@ local App = htmlua.component(function(props, children)
     br {},
     -- or no arguments at all.
     UnixTimestamp(),
+
+    -- Props are escaped automatically.
+    p { title = 'This is a title "with quotes".', "Hover over me!" },
   }
 end)
 
